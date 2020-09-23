@@ -74,6 +74,7 @@
 		};
 	};
 
+
 	xusb_padctl: xusb_padctl@3520000 {
 		status = "okay";
 
@@ -214,11 +215,11 @@
 	};
 
 	/* GPIO Expander for 40 pin header */
-	i2c@3160000 { /* gen1_i2c */
+	i2c@3160000 {
 		status = "okay";
 
 		/* for 40 pin GPIO exapnder */
-		sx1509_expander: gpio@70 {
+		sx1509_expander: i2c_gpio_expander@70 {
 			#gpio-cells = <2>;
 			#interrupt-cells = <2>;
 			compatible = "semtech,sx1509q";
@@ -230,32 +231,32 @@
 		};
 	};
 
-	i2c@c240000 {
+	i2c@c240000 { /* gen2_i2c: i2c@c240000 */
 		status = "okay";
 	};
 
-	i2c@3180000 {
+	i2c@3180000  { /* cam_i2c: i2c@3180000 */
 		status = "okay";
 	};
 
 	/* this i2c is for HDMI port probing EDID */
-	i2c@3190000 {
+	i2c@3190000 { /* dp_aux_ch1_i2c: i2c@3190000 */
 		status = "okay";
 	};
 
-	i2c@31b0000 {
+	i2c@31b0000 { /* dp_aux_ch0_i2c: i2c@31b0000 */
 		status = "disable";
 	};
 
-	i2c@31c0000 {
+	i2c@31c0000 { /* dp_aux_ch2_i2c: i2c@31c0000 */
 		status = "disable";
 	};
 
-	i2c@c250000 {
+	i2c@c250000 { /* gen8_i2c: i2c@c250000 */
 		status = "okay";
 	};
 
-	i2c@31e0000 {
+	i2c@31e0000 { /* dp_aux_ch3_i2c: i2c@31e0000 */
 		status = "okay";
 	};
 
