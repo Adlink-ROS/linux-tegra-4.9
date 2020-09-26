@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2020, ADLINK Technology Inc. Advanved Robotic Platform Group.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ */
+
+/ {
+
+	/* GPIO Expander for 40 pin header */
+	i2c@3160000 {
+		status = "okay";
+
+		/* for 40 pin GPIO exapnder */
+		sx1509_expander: i2c_gpio_expander@70 {
+			#gpio-cells = <2>;
+			#interrupt-cells = <2>;
+			compatible = "semtech,sx1509q";
+			reg = <0x70>;
+			interrupt-parent = <&tegra_main_gpio>;
+			interrupts = <TEGRA194_MAIN_GPIO(Q, 6) GPIO_ACTIVE_LOW>;
+			gpio-controller;
+			interrupt-controller;
+		};
+	};
+
+	/* UART0 on external header */
+	hdr_uart0: serial@3110000 {
+		compatible = "nvidia,tegra186-hsuart";
+		status = "okay";
+	};
+    
+    /* SPI1 in external header */
+	hdr_spi0: spi@3210000 {
+	
+		status = "okay";
+
+		spi@0 { /* chip select 0 */
+			compatible = "spidev";
+			reg = <0x0>;
+			spi-max-frequency = <50000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x10>;
+				nvidia,tx-clk-tap-delay = <0x0>;
+			};
+		};
+
+		spi@1 { /* chip select 1 */
+			compatible = "spidev";
+			reg = <0x1>;
+			spi-max-frequency = <50000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x10>;
+				nvidia,tx-clk-tap-delay = <0x0>;
+			};
+		};
+	};
+
+	pwm@3280000 { /* GPIO13_PWM */
+		status = "okay";
+	};
+
+	pwm@32f0000 { /* GPIO07_PWM */
+		status = "okay";
+	};
+
+	pwm@c340000 { /* GPIO12_PWM */
+		status = "okay";
+	};
+};

@@ -214,21 +214,8 @@
 		suspend_state = <0>;
 	};
 
-	/* GPIO Expander for 40 pin header */
-	i2c@3160000 {
+	i2c@3160000 { /* gen1_i2c: i2c@3160000 */
 		status = "okay";
-
-		/* for 40 pin GPIO exapnder */
-		sx1509_expander: i2c_gpio_expander@70 {
-			#gpio-cells = <2>;
-			#interrupt-cells = <2>;
-			compatible = "semtech,sx1509q";
-			reg = <0x70>;
-			interrupt-parent = <&tegra_main_gpio>;
-			interrupts = <TEGRA194_MAIN_GPIO(Q, 6) GPIO_ACTIVE_LOW>;
-			gpio-controller;
-			interrupt-controller;
-		};
 	};
 
 	i2c@c240000 { /* gen2_i2c: i2c@c240000 */
@@ -265,18 +252,10 @@
 		status = "okay";
 	};
 
-	serial@3140000 {
-		compatible = "nvidia,tegra186-hsuart";
-		status = "okay";
-	};
-
+	/* This is for Debug Console */
 	combined-uart {
 		console-port;
 		combined-uart;
-		status = "okay";
-	};
-
-	pwm@c340000 {
 		status = "okay";
 	};
 
@@ -421,33 +400,6 @@
 	dpaux3 {
 		compatible = "nvidia,tegra194-dpaux3-pinctrl";
 		status = "okay";
-	};
-
-	hdr_spi0: spi@3210000{ /* SPI1 in external header */
-	
-		status = "okay";
-
-		spi@0 { /* chip select 0 */
-			compatible = "spidev";
-			reg = <0x0>;
-			spi-max-frequency = <50000000>;
-			controller-data {
-				nvidia,enable-hw-based-cs;
-				nvidia,rx-clk-tap-delay = <0x10>;
-				nvidia,tx-clk-tap-delay = <0x0>;
-			};
-		};
-
-		spi@1 { /* chip select 1 */
-			compatible = "spidev";
-			reg = <0x1>;
-			spi-max-frequency = <50000000>;
-			controller-data {
-				nvidia,enable-hw-based-cs;
-				nvidia,rx-clk-tap-delay = <0x10>;
-				nvidia,tx-clk-tap-delay = <0x0>;
-			};
-		};
 	};
 
 	icm_gyro_spi: spi@3230000{ /* SPI3 connect to ICM 20948 Gyo Sensor */

@@ -15,6 +15,8 @@
 #include "tegra194-fixed-regulator-p3509-0000-a00.dtsi"
 #include "tegra194-p3509-disp.dtsi"
 #include "tegra194-audio-p3668.dtsi"
+#include "tegra194-roscube-extern-header.dtsi"
+#include "tegra194-roscube-fan.dtsi"
 
 / {
 	gpio-keys {
@@ -46,75 +48,8 @@
 		};
 	};
 
-	pwm-fan {
-		pwms = <&tegra_pwm6 0 45334>;
-		vdd-fan-supply = <&p3509_vdd_fan>;
-		profiles {
-			default = "quiet";
-			quiet {
-				state_cap = <4>;
-				active_pwm = <0 130 160 200 255 255 255 255 255 255>;
-			};
-			cool {
-				state_cap = <4>;
-				active_pwm = <0 140 170 200 255 255 255 255 255 255>;
-			};
-		};
-	};
-	
-	thermal-fan-est {
-		profiles {
-			default = "quiet";
-			quiet {
-				active_trip_temps = <0 46000 60000 68000 76000
-						140000 150000 160000 170000 180000>;
-				active_hysteresis = <0 8000 8000 7000 7000
-						0 0 0 0 0>;
-			};
-			cool {
-				active_trip_temps = <0 35000 45000 53000 61000
-						140000 150000 160000 170000 180000>;
-				active_hysteresis = <0 8000 8000 7000 7000
-						0 0 0 0 0>;
-			};
-		};
-	};
-
 	serial@3110000 { /* External Header provided UART */
 		status = "okay";
-	};
-
-	gpio_tachometer {
-        compatible = "nvidia,gpio-tachometer";
-        win-len = <2>;
-        pulse-per-rev = <2>;
-        schedule-delay = <10000>;
-        gpio = <&tegra_main_gpio TEGRA194_MAIN_GPIO(Y, 4) 0>;
-        status = "okay";
-    };
-
-	pwm@3280000 {
-		status = "okay";
-	};
-
-	pwm@32c0000 {
-		status = "okay";
-	};
-
-	pwm@32d0000 {
-		status = "okay";
-	};
-
-	pwm@32f0000 {
-		status = "okay";
-	};
-	
-	spi@c260000 {
-		status = "disabled";
-	};
-
-	spi@3300000 {
-		status = "disabled";
 	};
 
 	gpio@2200000 {
