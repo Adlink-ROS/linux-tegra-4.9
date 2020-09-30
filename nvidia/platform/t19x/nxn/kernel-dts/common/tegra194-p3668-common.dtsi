@@ -264,7 +264,6 @@
 		nvidia,enable-hwcq;
 		status = "okay";
 	};
-
 	sdhci_sd: sdhci@3400000 {
 		mmc-ocr-mask = <0x0>;
 		cd-inverted;
@@ -275,7 +274,6 @@
 		vmmc-supply = <&p3668_vdd_sdmmc1_sw>;
 		status = "okay";
 	};
-
 	mipical@3990000 {
 		status = "okay";
 	};
