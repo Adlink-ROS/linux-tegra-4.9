@@ -1848,7 +1848,9 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
 			LAN88XX_INT_MASK_MDINTPIN_EN_ |
 			LAN88XX_INT_MASK_LINK_CHANGE_);
 
-	phydev->irq = PHY_IGNORE_INTERRUPT;
+	// Reference: https://forums.developer.nvidia.com/t/jetson-xavier-and-lan7800-problem/142134/10
+	// phydev->irq = PHY_IGNORE_INTERRUPT;
+	phydev->irq = PHY_POLL;
 
 	ret = phy_connect_direct(dev->net, phydev,
 				 lan78xx_link_status_change,
