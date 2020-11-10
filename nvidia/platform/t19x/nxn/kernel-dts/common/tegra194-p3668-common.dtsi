@@ -30,6 +30,7 @@
 / {
 	nvidia,fastboot-usb-vid = <0x0955>;
 	nvidia,fastboot-usb-pid = <0xee1e>;
+	model = "NVIDIA Jetson Xavier NX Developer Kit";
 
 	chosen {
 		bootargs ="console=ttyTCU0,115200";
@@ -50,14 +51,31 @@
 		nvidia,invert-interrupt;
 	};
 
-    pmc@c360000 {
-        iopad_defaults: iopad-defaults {
-            sdmmc-io-pads {
-                pins = "sdmmc1-hv", "sdmmc3-hv";
-                nvidia,enable-voltage-switching;
-            };
-        };
-     };
+        pmc@c360000 {
+                 iopad_defaults: iopad-defaults {
+                         sdmmc-io-pads {
+                                 pins = "sdmmc1-hv", "sdmmc3-hv";
+                                 nvidia,enable-voltage-switching;
+                         };
+                 };
+         };
+
+	hdr40_i2c0: i2c@c240000 {
+		/* This I2C (GEN2) is routed only to 40-pin hdr
+		 * Not being used in Jakku CVM/CVB/Porg-base-board
+		 * it seems "ucsi_ccg" for USB-TypeC which is not supported by Jakku */
+		bmi160@69 {
+			compatible = "bmi,bmi160";
+			reg = <0x69>;
+			interrupt-parent = <&tegra_aon_gpio>;
+			interrupts = <TEGRA194_AON_GPIO(AA, 2) GPIO_ACTIVE_LOW>;
+			accelerometer_matrix    = [01 00 00 00 01 00 00 00 01];
+			gyroscope_matrix        = [01 00 00 00 01 00 00 00 01];
+			accelerometer_delay_us_min = <1250>;
+			gyroscope_delay_us_min = <1250>;
+			status = "disabled";
+		};
+	};
 
 	external-connection {
 		vbus_id_extcon: extcon@1 {
@@ -73,7 +91,6 @@
 			#extcon-cells = <1>;
 		};
 	};
-
 
 	xusb_padctl: xusb_padctl@3520000 {
 		status = "okay";
@@ -214,48 +231,23 @@
 		suspend_state = <0>;
 	};
 
-	i2c@3160000 { /* gen1_i2c: i2c@3160000 */
-		status = "okay";
-	};
-
-	i2c@c240000 { /* gen2_i2c: i2c@c240000 */
-		status = "okay";
-	};
-
-	i2c@3180000  { /* cam_i2c: i2c@3180000 */
-		status = "okay";
-	};
-
-	/* this i2c is for HDMI port probing EDID */
-	i2c@3190000 { /* dp_aux_ch1_i2c: i2c@3190000 */
-		status = "okay";
-	};
-
-	i2c@31b0000 { /* dp_aux_ch0_i2c: i2c@31b0000 */
-		status = "disable";
-	};
-
-	i2c@31c0000 { /* dp_aux_ch2_i2c: i2c@31c0000 */
-		status = "disable";
-	};
-
-	i2c@c250000 { /* gen8_i2c: i2c@c250000 */
-		status = "okay";
-	};
-
-	i2c@31e0000 { /* dp_aux_ch3_i2c: i2c@31e0000 */
-		status = "okay";
-	};
-
 	serial@3100000 {
 		compatible = "nvidia,tegra186-hsuart";
 		status = "okay";
 	};
 
-	/* This is for Debug Console */
+	serial@3140000 {
+		compatible = "nvidia,tegra186-hsuart";
+		status = "okay";
+	};
+
 	combined-uart {
 		console-port;
 		combined-uart;
+		status = "okay";
+	};
+
+	pwm@c340000 {
 		status = "okay";
 	};
 
@@ -264,16 +256,18 @@
 		nvidia,enable-hwcq;
 		status = "okay";
 	};
+
 	sdhci_sd: sdhci@3400000 {
 		mmc-ocr-mask = <0x0>;
 		cd-inverted;
-		cd-gpios = <&tegra_main_gpio TEGRA194_MAIN_GPIO(Q, 2) 0>;
+		cd-gpios = <&tegra_main_gpio TEGRA194_MAIN_GPIO(G, 7) 0>;
 		nvidia,cd-wakeup-capable;
 		mmc-ocr-mask = <0>;
 		cd-inverted;
 		vmmc-supply = <&p3668_vdd_sdmmc1_sw>;
 		status = "okay";
 	};
+
 	mipical@3990000 {
 		status = "okay";
 	};
@@ -382,6 +376,11 @@
 		};
 	};
 
+	hdr40_i2c1: i2c@31e0000 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&dpaux_default>;
+	};
+
 	host1x {
 		dpaux@155F0000 {
 			status = "okay";
@@ -400,11 +399,45 @@
 		status = "okay";
 	};
 
-	icm_gyro_spi: spi@3230000{ /* SPI3 connect to ICM 20948 Gyo Sensor */
+	spi@3210000{ /* SPI1 in 40 pin conn */
 		status = "okay";
 		spi@0 { /* chip select 0 */
 			compatible = "spidev";
 			reg = <0x0>;
+			spi-max-frequency = <50000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x10>;
+				nvidia,tx-clk-tap-delay = <0x0>;
+			};
+		};
+		spi@1 { /* chip select 1 */
+			compatible = "spidev";
+			reg = <0x1>;
+			spi-max-frequency = <50000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x10>;
+				nvidia,tx-clk-tap-delay = <0x0>;
+			};
+		};
+	};
+
+	spi@3230000{ /* SPI3 in 40 pin conn */
+		status = "okay";
+		spi@0 { /* chip select 0 */
+			compatible = "spidev";
+			reg = <0x0>;
+			spi-max-frequency = <50000000>;
+			controller-data {
+				nvidia,enable-hw-based-cs;
+				nvidia,rx-clk-tap-delay = <0x10>;
+				nvidia,tx-clk-tap-delay = <0x0>;
+			};
+		};
+		spi@1 { /* chips select 1 */
+			compatible = "spidev";
+			reg = <0x1>;
 			spi-max-frequency = <50000000>;
 			controller-data {
 				nvidia,enable-hw-based-cs;
@@ -418,12 +451,12 @@
 		nvidia,phy-reset-gpio = <&tegra_main_gpio TEGRA194_MAIN_GPIO(R, 1) 0>;
 		nvidia,phy-reset-post-delay = <224>;
 		nvidia,phy-reset-duration = <10000>;
-        mdio {
-            compatible = "nvidia,eqos-mdio";
-               	#address-cells = <1>;
-                #size-cells = <0>;
-                phy0: ethernet-phy@0 {
-            	reg = <1>;
+                mdio {
+                        compatible = "nvidia,eqos-mdio";
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        phy0: ethernet-phy@0 {
+                                reg = <1>;
 			};
 		};
 	};
@@ -460,7 +493,6 @@
 			};
 		};
 	};
-
 	clocks-init {
 		compatible = "nvidia,clocks-config";
 		status = "okay";
