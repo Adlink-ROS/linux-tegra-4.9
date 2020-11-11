@@ -13,12 +13,12 @@
 #include <dt-bindings/gpio/tegra194-gpio.h>
 #include "dt-bindings/input/input.h"
 #include "tegra194-fixed-regulator-p3509-0000-a00.dtsi"
-#include "tegra194-audio-p3668.dtsi"
 #include <dt-bindings/display/tegra-dc.h>
 #include <dt-bindings/display/tegra-panel.h>
 #include <t19x-common-platforms/tegra194-hdmi.dtsi>
 #include <t19x-common-platforms/tegra194-dp.dtsi>
 #include "tegra194-spmic-p3668.dtsi"
+#include <audio/tegra-platforms-audio-dai-links.dtsi>
 
 /**
  *	HDMI port
@@ -225,6 +225,125 @@
 	};
 };
 
+/** 
+ *	Audio
+ */
+
+&gen1_i2c {
+	rt5640: rt5640@1c {
+		status = "okay";
+		compatible = "realtek,rt5640";
+		reg = <0x1c>;
+	};
+};
+
+&tegra_i2s1 {
+	status = "disabled";
+};
+
+&tegra_i2s2 {
+	status = "disabled";
+};
+
+&tegra_i2s3 {
+	status = "disabled";
+};
+
+&tegra_i2s4 {
+	status = "disabled";
+};
+
+&tegra_i2s5 {
+	status = "okay";
+};
+
+&tegra_i2s6 {
+	status = "disabled";
+};
+
+/ {
+	aconnect@2a41000 {
+		status = "okay";
+
+		agic-controller@2a41000 {
+			status = "okay";
+		};
+
+		adsp@2993000 {
+			status = "okay";
+		};
+	};
+
+	hda@3510000 {
+		hda,card-name = "tegra-hda-xnx";
+		status = "okay";
+	};
+
+	tegra_sound: sound {
+		status = "okay";
+		compatible = "nvidia,tegra-audio-t186ref-mobile-rt565x";
+		nvidia,model = "jetson-xaviernx-ape";
+		nvidia,num-codec-link = <1>;
+		nvidia,num-clk = <8>;
+		nvidia,clk-rates = < 270950400  /* PLLA_x11025_RATE */
+                    11289600    /* AUD_MCLK_x11025_RATE */
+                    45158400    /* PLLA_OUT0_x11025_RATE */
+                    45158400    /* AHUB_x11025_RATE */
+                    245760000   /* PLLA_x8000_RATE */
+                    12288000    /* AUD_MCLK_x8000_RATE */
+                    49152000    /* PLLA_OUT0_x8000_RATE */
+                    49152000 >; /* AHUB_x8000_RATE */
+
+		clocks = <&bpmp_clks TEGRA194_CLK_PLLA>,
+			 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
+			 <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
+		clock-names = "pll_a", "pll_a_out0", "extern1";
+
+		assigned-clocks = <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
+				  <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
+		assigned-clock-parents = <&bpmp_clks TEGRA194_CLK_PLLA>,
+					 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>;
+
+		nvidia,audio-routing =
+			"x Headphone Jack", "x HPOL",
+			"x Headphone Jack", "x HPOR",
+			"x Int Spk", "x SPORP",
+			"x Int Spk", "x SPORN",
+			"x Int Spk", "x SPOLP",
+			"x Int Spk", "x SPOLN",
+			"x IN1P", "x Mic Jack",
+			"x IN1P", "x MICBIAS1",
+			"x IN2P", "x Int Mic",
+			"x IN2P", "x MICBIAS1",
+			"x IN3P", "x Int Mic",
+			"x IN3P", "x MICBIAS1";
+			
+		mclk-fs = <256>;
+
+		i2s_dai_link5: nvidia,dai-link-5 {
+			name-prefix = "x";
+			cpu-dai = <&tegra_i2s5>;
+			cpu-dai-name = "I2S5";
+			// link-name = "rt5640_playback";
+			link-name = "rt565x-playback";
+			codec-dai = <&rt5640>;
+			codec-dai-name = "rt5640-aif1";
+			
+			format = "i2s";
+			bitclock-slave;
+			frame-slave;
+			bitclock-noninversion;
+			frame-noninversion;
+			bit-format = "s16_le";
+			bclk_ratio = <1>;
+			srate = <48000>;
+			num-channel = <1>;
+			ignore_suspend;
+			
+			status = "okay";
+		};
+	};
+};
 
 /**
  * Others
@@ -285,14 +404,6 @@
 
 	pwm@32f0000 {
 		status = "okay";
-	};
-
-	spi@c260000 {
-		status = "disabled";
-	};
-
-	spi@3300000 {
-		status = "disabled";
 	};
 
 	gpio@2200000 {
