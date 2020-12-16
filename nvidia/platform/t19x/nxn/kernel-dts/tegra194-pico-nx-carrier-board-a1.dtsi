@@ -11,14 +11,15 @@
  * more details.
  */
 #include <dt-bindings/gpio/tegra194-gpio.h>
-#include "dt-bindings/input/input.h"
-#include "tegra194-fixed-regulator-p3509-0000-a00.dtsi"
+#include <dt-bindings/input/input.h>
 #include <dt-bindings/display/tegra-dc.h>
 #include <dt-bindings/display/tegra-panel.h>
 #include <t19x-common-platforms/tegra194-hdmi.dtsi>
 #include <t19x-common-platforms/tegra194-dp.dtsi>
-#include "tegra194-spmic-p3668.dtsi"
 #include <audio/tegra-platforms-audio-dai-links.dtsi>
+#include "common/tegra194-fixed-regulator-p3509-0000-a00.dtsi"
+#include "common/tegra194-spmic-p3668.dtsi"
+#include "common/tegra194-audio-p3668.dtsi"
 
 /**
  *	HDMI port
@@ -195,7 +196,7 @@
 };
 
 /**
- *	Gyro sensor(WIP)
+ *	Gyro sensor
  */
 &gen1_i2c {
 	bmi160@69 {
@@ -207,7 +208,7 @@
 		gyroscope_matrix        = [01 00 00 00 01 00 00 00 01];
 		accelerometer_delay_us_min = <1250>;
 		gyroscope_delay_us_min = <1250>;
-		status = "disabled";
+		status = "pkay";
 	};
 };
 
@@ -221,81 +222,6 @@
 			nvidia,enable-hw-based-cs;
 			nvidia,rx-clk-tap-delay = <0x10>;
 			nvidia,tx-clk-tap-delay = <0x0>;
-		};
-	};
-};
-
-/** 
- *	Audio
- */
-
-&gen1_i2c {
-	rt5640: rt5640@1c {
-		status = "okay";
-		compatible = "realtek,rt5640";
-		reg = <0x1c>;
-	};
-};
-
-/ {
-	aconnect@2a41000 {
-		status = "okay";
-
-		agic-controller@2a41000 {
-			status = "okay";
-		};
-
-		adsp@2993000 {
-			status = "okay";
-		};
-	};
-
-	hda@3510000 {
-		hda,card-name = "tegra-hda-xnx";
-		status = "okay";
-	};
-
-	tegra_sound: sound {
-		status = "okay";
-		compatible = "nvidia,tegra-audio-t186ref-mobile-rt565x";
-		nvidia,model = "jetson-xaviernx-ape";
-		nvidia,num-codec-link = <1>;
-
-		clocks = <&bpmp_clks TEGRA194_CLK_PLLA>,
-			 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
-			 <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
-		clock-names = "pll_a", "pll_a_out0", "extern1";
-
-		assigned-clocks = <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
-				  <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
-		assigned-clock-parents = <&bpmp_clks TEGRA194_CLK_PLLA>,
-					 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>;
-
-		nvidia,audio-routing =
-			"x Headphone Jack", "x HPOL",
-			"x Headphone Jack", "x HPOR";
-			
-		mclk-fs = <256>;
-
-		rt5640_dai_link: nvidia,dai-link-5 {
-			name-prefix = "x";
-			link-name = "rt5640-playback";
-			cpu-dai = <&tegra_i2s5>;
-			cpu-dai-name = "I2S5";
-			codec-dai = <&rt5640>;
-			codec-dai-name = "rt5640-aif1";
-			
-			format = "i2s";
-			bitclock-slave;
-			frame-slave;
-			bitclock-noninversion;
-			frame-noninversion;
-			bit-format = "s16_le";
-			bclk_ratio = <0>;
-			srate = <48000>;
-			num-channel = <2>;
-			ignore_suspend;
-			status = "okay";
 		};
 	};
 };
@@ -397,4 +323,72 @@
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",     "GPIO12";
 	};
 
+};
+
+/** 
+ *	Audio
+ */
+
+&gen1_i2c {
+	rt5640: rt5640@1c {
+		status = "okay";
+		compatible = "realtek,rt5640";
+		reg = <0x1c>;
+	};
+};
+
+
+/ {
+	aconnect@2a41000 {
+		status = "okay";
+
+		agic-controller@2a41000 {
+			status = "okay";
+		};
+
+		adsp@2993000 {
+			status = "okay";
+		};
+	};
+
+	hda@3510000 {
+		hda,card-name = "tegra-hda-xnx";
+		status = "okay";
+	};
+
+	tegra_sound: sound {
+		status = "okay";
+		compatible = "nvidia,tegra-audio-t186ref-mobile-rt565x";
+		nvidia,model = "jetson-xaviernx-ape";
+
+		clocks = <&bpmp_clks TEGRA194_CLK_PLLA>,
+			 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
+			 <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
+		clock-names = "pll_a", "pll_a_out0", "extern1";
+
+		assigned-clocks = <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>,
+				  <&bpmp_clks TEGRA194_CLK_AUD_MCLK>;
+		assigned-clock-parents = <&bpmp_clks TEGRA194_CLK_PLLA>,
+					 <&bpmp_clks TEGRA194_CLK_PLLA_OUT0>;
+
+		nvidia,audio-routing =
+			"x Headphone Jack", "x HPOL",
+			"x Headphone Jack", "x HPOR";
+			
+		mclk-fs = <256>;
+
+		hdr40_snd_link_i2s: nvidia,dai-link-5 {
+			name-prefix = "x";
+			link-name = "rt5640-playback";
+			cpu-dai = <&tegra_i2s5>;
+			cpu-dai-name = "I2S5";
+			codec-dai = <&rt5640>;
+			codec-dai-name = "rt5640-aif1";
+			format = "i2s";
+			bit-format = "s16_le";
+			srate = <48000>;
+			num-channel = <2>;
+			status = "okay";
+		};
+	};
 };
