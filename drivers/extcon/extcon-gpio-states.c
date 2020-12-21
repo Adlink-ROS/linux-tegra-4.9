@@ -152,7 +152,10 @@ static void gpio_extcon_scan_work(struct work_struct *work)
 	if (gpex->last_cstate != cstate) {
 		if (gpex->pdata->has_extcon_none_state &&
 		    gpex->last_cstate == EXTCON_USB_HOST) {
-			cstate = EXTCON_NONE;
+
+            gpex->pdata->has_extcon_none_state = false;
+            cstate = EXTCON_USB;
+		
 			gpex->pdata->cable_id = cstate;
 		}
 
