@@ -133,12 +133,8 @@
 	status = "okay";
 };
 
-&spi0 {
-	status = "disabled";
-};
-
 // SPI0 on external header
-&spi1 {
+&spi0 {
 	status = "okay";
 
 	spi@0 { /* chip select 0 */
@@ -155,6 +151,25 @@
 	spi@1 { /* chip select 1 */
 		compatible = "spidev";
 		reg = <0x1>;
+		spi-max-frequency = <50000000>;
+		controller-data {
+			nvidia,enable-hw-based-cs;
+			nvidia,rx-clk-tap-delay = <0x10>;
+			nvidia,tx-clk-tap-delay = <0x0>;
+		};
+	};
+};
+
+&spi1 {
+	status = "disabled";
+};
+
+&spi2 {
+	status = "okay";
+
+	spi@0 { /* chip select 0 */
+		compatible = "spidev";
+		reg = <0x0>;
 		spi-max-frequency = <50000000>;
 		controller-data {
 			nvidia,enable-hw-based-cs;
@@ -196,33 +211,13 @@
 };
 
 /**
- *	Gyro sensor
+ *	Gyro sensor (board has connected to SPI bus, not i2c)
  */
-&gen1_i2c {
-	bmi160@69 {
-		compatible = "bmi,bmi160";
-		reg = <0x69>;
-		interrupt-parent = <&tegra_aon_gpio>;
-		interrupts = <TEGRA194_AON_GPIO(AA, 2) GPIO_ACTIVE_LOW>;
-		accelerometer_matrix    = [01 00 00 00 01 00 00 00 01];
-		gyroscope_matrix        = [01 00 00 00 01 00 00 00 01];
-		accelerometer_delay_us_min = <1250>;
-		gyroscope_delay_us_min = <1250>;
-		status = "pkay";
-	};
-};
-
-&spi2 {
-	status = "okay";
-	spi@0 { /* chip select 0 */
-		compatible = "spidev";
-		reg = <0x0>;
-		spi-max-frequency = <50000000>;
-		controller-data {
-			nvidia,enable-hw-based-cs;
-			nvidia,rx-clk-tap-delay = <0x10>;
-			nvidia,tx-clk-tap-delay = <0x0>;
-		};
+/ {
+	bmi160@0 {
+		compatible = "bosch,bmi160";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
 	};
 };
 
