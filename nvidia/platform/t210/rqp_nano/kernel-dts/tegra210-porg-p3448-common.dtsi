@@ -49,9 +49,9 @@
 #include "porg-platforms/tegra210-porg-super-module-e2614.dtsi"
 
 / {
-        nvidia,boardids = "3448";
-        nvidia,proc-boardid = "3448";
-        nvidia,pmu-boardid = "3448";
+	nvidia,boardids = "3448";
+    nvidia,proc-boardid = "3448";
+    nvidia,pmu-boardid = "3448";
 	nvidia,fastboot-usb-pid = <0xb442>;
 
 	chosen {
@@ -65,10 +65,10 @@
 	cpus {
 		cpu@0 {
 			clocks = <&tegra_car TEGRA210_CLK_CCLK_G>,
-				 <&tegra_car TEGRA210_CLK_CCLK_LP>,
-				 <&tegra_car TEGRA210_CLK_PLL_X>,
-				 <&tegra_car TEGRA210_CLK_PLL_P_OUT4>,
-				 <&tegra_clk_dfll>;
+				<&tegra_car TEGRA210_CLK_CCLK_LP>,
+				<&tegra_car TEGRA210_CLK_PLL_X>,
+				<&tegra_car TEGRA210_CLK_PLL_P_OUT4>,
+				<&tegra_clk_dfll>;
 			clock-names = "cpu_g", "cpu_lp", "pll_x", "pll_p", "dfll";
 			clock-latency = <300000>;
 		};
