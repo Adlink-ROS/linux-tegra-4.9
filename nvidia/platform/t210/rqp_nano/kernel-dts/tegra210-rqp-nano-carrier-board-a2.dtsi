@@ -11,4 +11,106 @@
  * more details.
  */
 
- 
+ /**
+ *	External SD card
+ */ 
+&sdmmc3 {
+	mmc-ocr-mask = <0x0>;
+	cd-inverted;
+	cd-gpios = <&gpio TEGRA_GPIO(P, 2) 0>;
+	nvidia,cd-wakeup-capable;
+	status = "okay";
+};
+
+/**
+ *	External Header 
+ */
+
+&spi0 {
+	status = "disabled";
+};
+
+&spi1 {
+	status = "okay";
+
+	spi@0 { /* chip select 0 */
+		compatible = "spidev";
+		reg = <0x0>;
+		spi-max-frequency = <50000000>;
+		controller-data {
+			nvidia,enable-hw-based-cs;
+			nvidia,rx-clk-tap-delay = <0x10>;
+			nvidia,tx-clk-tap-delay = <0x0>;
+		};
+	};
+
+	spi@1 { /* chip select 1 */
+		compatible = "spidev";
+		reg = <0x1>;
+		spi-max-frequency = <50000000>;
+		controller-data {
+			nvidia,enable-hw-based-cs;
+			nvidia,rx-clk-tap-delay = <0x10>;
+			nvidia,tx-clk-tap-delay = <0x0>;
+		};
+	};
+};
+
+&spi2 {
+	status = "okay";
+
+	spi@0 { /* chip select 0 */
+		compatible = "spidev";
+		reg = <0x0>;
+		spi-max-frequency = <50000000>;
+		controller-data {
+			nvidia,enable-hw-based-cs;
+			nvidia,rx-clk-tap-delay = <0x10>;
+			nvidia,tx-clk-tap-delay = <0x0>;
+		};
+	};
+};
+
+&spi3 {
+	status = "disabled";
+};
+
+&i2c3 {
+
+	status = "okay";
+
+	/* for 40 pin GPIO exapnder */
+	sx1509_expander: i2c_gpio_expander@70 {
+		#gpio-cells = <2>;
+		#interrupt-cells = <2>;
+		compatible = "semtech,sx1509q";
+		reg = <0x70>;
+		interrupt-parent = <&gpio>;
+		interrupts = <TEGRA_GPIO(Z, 0) GPIO_ACTIVE_LOW>;
+		gpio-controller;
+		interrupt-controller;
+	};	
+};
+
+/**
+ *	Gyro sensor (board has connected to SPI bus, not i2c)
+ */
+/ {
+	bmi160@0 {
+		compatible = "bosch,bmi160";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+/** 
+ *	Audio
+ */
+
+&i2c3 {
+	rt5640: rt5640@1c {
+		status = "okay";
+		compatible = "realtek,rt5640";
+		reg = <0x1c>;
+	};
+};

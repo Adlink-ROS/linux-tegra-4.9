@@ -1,6 +1,7 @@
 #include "tegra210-porg-p3448-common.dtsi"
 #include "tegra210-rqp-nano-gpio-default.dtsi"
 #include "tegra210-rqp-nano-pinmux.dtsi"
+#include "tegra210-rqp-nano-carrier-board-a2.dtsi"
 
 / {
 	nvidia,dtsfilename = __FILE__;
