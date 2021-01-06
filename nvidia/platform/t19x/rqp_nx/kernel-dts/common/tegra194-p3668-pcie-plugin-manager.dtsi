@@ -26,7 +26,7 @@
 			override@1 {
 				target = <&{/pcie_ep@141a0000}>;
 				_overlay_ {
-					status = "disabled";
+					status = "okay"; // temporarily modify status from 'disabled' to 'okay' for NVMe workaround
 				};
 			};
             override@2 {
