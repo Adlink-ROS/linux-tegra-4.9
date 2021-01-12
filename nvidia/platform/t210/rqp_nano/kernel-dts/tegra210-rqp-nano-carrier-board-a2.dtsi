@@ -114,3 +114,43 @@
 		reg = <0x1c>;
 	};
 };
+
+
+/ {
+	tegra_sound: sound {
+		status = "okay";
+		compatible = "nvidia,tegra-audio-t210ref-mobile-rt565x";
+		nvidia,model = "tegra-snd-t210ref-mobile-rt565x";
+
+		clocks = <&tegra_car TEGRA210_CLK_PLL_A>,
+			 <&tegra_car TEGRA210_CLK_PLL_A_OUT0>,
+			 <&tegra_car TEGRA210_CLK_EXTERN1>;
+		clock-names = "pll_a", "pll_a_out0", "extern1";
+
+		assigned-clocks = <&tegra_car TEGRA210_CLK_EXTERN1>;
+		assigned-clock-parents = <&tegra_car TEGRA210_CLK_PLL_A_OUT0>;
+
+		nvidia,num-codec-link = <1>;
+
+		nvidia,audio-routing =
+			"x Headphone Jack", "x HPOL",
+			"x Headphone Jack", "x HPOR";
+			
+		nvidia,xbar = <&tegra_axbar>;
+		mclk-fs = <256>;
+
+		hdr40_snd_link_i2s: i2s_dai_link1: nvidia,dai-link-1 {
+			name-prefix = "x";
+			link-name = "rt5640-playback";
+			cpu-dai = <&tegra_i2s4>;
+			cpu-dai-name = "I2S4";
+			codec-dai = <&rt5640>;
+			codec-dai-name = "rt5640-aif1";
+			format = "i2s";
+			bit-format = "s16_le";
+			srate = <48000>;
+			num-channel = <2>;
+			status = "okay";
+		};
+	};
+};
