@@ -495,8 +495,36 @@
     };
 };
 
-&p2822_vdd_hdmi_5v0 {
-    gpio = <&pca9535_1 0 GPIO_ACTIVE_LOW>;
+/ {
+    regulator@112 {
+        gpio = <&pca9535_1 0 GPIO_ACTIVE_LOW>;
+    };
+};
+
+&head0 {
+    /delete-property/ extcon-cables;
+    /delete-property/ extcon-cable-names;
+    /delete-property/ #extcon-cells;
+};
+
+&head1 {
+    status = "disabled";
+};
+
+&sor1 {
+    status = "disabled";
+};
+
+&head2 {
+    status = "disabled";
+};
+
+&sor2 {
+    status = "disabled";
+};
+
+&tegra_usb_cd {
+    status = "disabled";
 };
 
 &pwm_fan_shared_data {
