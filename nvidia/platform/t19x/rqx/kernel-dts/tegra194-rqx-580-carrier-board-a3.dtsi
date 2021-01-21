@@ -13,8 +13,7 @@
 
 #include <dt-bindings/gpio/tegra194-gpio.h>
 
-/
-{
+/ {
     /* Etherent */
     ether_qos@2490000 {
 		phy-handle = <&phy4>;
@@ -56,15 +55,7 @@
         // spi0
     spi@3210000 {
         status = "okay";
-#if 0
-        spi1_test: spi1_test@0 {  
-            compatible = "spidev";
-            reg = <0x0>;
-            spi-max-frequency = <0x1312D00>;             
-            status = "okay";
-        };
-#endif
-            // spi0 CS.0 defined in : tegra194-p2888-0001-p2822-0000-common.dtsi
+        
         /* SPI0 CS.1 */
         spi@1 {
             compatible = "spidev";
