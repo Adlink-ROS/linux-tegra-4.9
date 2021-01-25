@@ -370,7 +370,7 @@
 			"x Headphone Jack", "x HPOL",
 			"x Headphone Jack", "x HPOR";
 			
-		mclk-fs = <256>;
+		mclk-fs = <512>;
 
 		hdr40_snd_link_i2s: nvidia,dai-link-5 {
 			name-prefix = "x";
