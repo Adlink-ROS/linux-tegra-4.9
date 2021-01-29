@@ -399,7 +399,7 @@
             label = "LED6"; /* USER_LED6 */
             gpios = <&pca9535_1 7 GPIO_ACTIVE_LOW>;
             default-state = "off";
-        };       
+        };
 #endif        
     };
 
@@ -413,24 +413,24 @@
     };
 
     i2c@3160000 {
-                    status = "okay";
+        status = "okay";
     };
     i2c@c240000 {
-                    status = "okay";
+        status = "okay";
     };
     i2c@3180000 {
-                    status = "okay";
+        status = "okay";
     };
     i2c@3190000 {
-                    status = "okay";
+        status = "okay";
     };
 
     mttcan@c310000 {
-            status = "okay";
+        status = "okay";
     };
 
     mttcan@c320000 {
-            status = "disabled";
+        status = "disabled";
     };
 
     /delete-node/ bluedroid_pm;
@@ -462,12 +462,23 @@
        interrupt-controller;
        #gpio-cells = <2>;
        pinctrl-names = "default";
-       pinctrl-0 = <>;         
+       pinctrl-0 = <>;
        #interrupt-cells = <2>;
        interrupt-parent = <&tegra_main_gpio>;
        interrupts = <TEGRA194_MAIN_GPIO(P, 5) GPIO_ACTIVE_HIGH>;
        vcc-supply = <&battery_reg>;
        status = "okay";            
+       
+       hdr1_line {
+           gpio-hog;
+           gpios = <
+            1 0
+            2 0
+            3 0
+            4 0
+           >;
+           output-low;
+       };
     };
 
     pca9535_2: gpio@21 {  
@@ -483,6 +494,28 @@
        interrupts = <TEGRA194_MAIN_GPIO(P, 6) GPIO_ACTIVE_HIGH>;
        vcc-supply = <&battery_reg>;
        status = "okay";
+       hdr2_line {
+           gpio-hog;
+           gpios = <
+            0 0
+            1 0
+            2 0
+            3 0
+            4 0
+            5 0
+            6 0
+            7 0
+            8 0
+            9 0
+            10 0
+            11 0
+            12 0
+            13 0
+            14 0
+            15 0
+           >;
+           output-low;
+       };
     };
 };
 
