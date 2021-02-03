@@ -206,16 +206,12 @@
 	};	
 };
 
-// GPIO13_PWM
+/* GPIO13_PWM */
 &tegra_pwm1 {
 	status = "okay";
 };
 
-// GPIO07_PWM
-&tegra_pwm8 {
-	status = "okay";
-};
-
+/* GPIO12_PWM */
 &tegra_pwm4 {
 	status = "okay";
 };
@@ -276,22 +272,6 @@
 		status = "okay";
 	};
 
-	pwm@3280000 {
-		status = "okay";
-	};
-
-	pwm@32c0000 {
-		status = "okay";
-	};
-
-	pwm@32d0000 {
-		status = "okay";
-	};
-
-	pwm@32f0000 {
-		status = "okay";
-	};
-
 	gpio@2200000 {
 		/* gpio-name for 40-pin header, gpio-name given as COL(10) x ROW(24),
 		   Tegra-GPIO starts from 288 */
@@ -303,7 +283,7 @@
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
-		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
 		"",     "",     "",     "",     "",     "GPIO13",     "",     "",     "",     "",
 		"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
