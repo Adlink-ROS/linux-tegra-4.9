@@ -95,7 +95,7 @@
 			default = "quiet";
 			quiet {
 				state_cap = <4>;
-				active_pwm = <0 64 128 191 255>;
+				active_pwm = <0 64 128 191 255 255 255 255 255 255>;
 			};
 		};
 	};
@@ -104,8 +104,8 @@
 		profiles {
 			default = "quiet";
 			quiet {
-				active_trip_temps = <0 46000 61000 76000 81000>;
-				active_hysteresis = <0 8000 8000 7000 7000>;
+				active_trip_temps = <0 46000 61000 76000 81000 140000 150000 160000 170000 180000>;
+				active_hysteresis = <0 8000 8000 7000 7000 0 0 0 0 0>;
 			};
 		};
 	};
