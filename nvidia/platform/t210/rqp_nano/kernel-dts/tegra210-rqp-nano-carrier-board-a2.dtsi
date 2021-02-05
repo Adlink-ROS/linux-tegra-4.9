@@ -17,7 +17,7 @@
 &sdmmc3 {
 	mmc-ocr-mask = <0x0>;
 	cd-inverted;
-	cd-gpios = <&gpio TEGRA_GPIO(P, 2) 0>;
+	cd-gpios = <&gpio TEGRA_GPIO(Z, 2) 0>;
 	nvidia,cd-wakeup-capable;
 	status = "okay";
 };
@@ -30,6 +30,9 @@
 	status = "disabled";
 };
 
+/**
+  *	MRAA SPI0
+  */
 &spi1 {
 	status = "okay";
 
@@ -75,6 +78,10 @@
 	status = "disabled";
 };
 
+/** 
+  * 	GPIO Expander SX1509
+  */
+
 &i2c3 {
 
 	status = "okay";
@@ -89,17 +96,62 @@
 		interrupts = <TEGRA_GPIO(Z, 0) GPIO_ACTIVE_LOW>;
 		gpio-controller;
 		interrupt-controller;
+		hdr_line {
+			gpio-hog;
+			gpios = <
+			0 0
+			1 0
+			2 0
+			3 0
+			4 0
+			5 0
+			6 0
+			7 0
+			8 0
+			9 0
+			10 0
+			11 0
+			12 0
+			13 0
+			14 0
+			15 0
+			>;
+			output-low;
+		};
 	};	
 };
 
 /**
- *	Gyro sensor (board has connected to SPI bus, not i2c)
- */
+  * @FAN 
+  */
+
 / {
-	bmi160@0 {
-		compatible = "bosch,bmi160";
-		reg = <0>;
-		spi-max-frequency = <10000000>;
+	tachometer {
+        compatible = "nvidia,gpio-tachometer";
+        win-len = <2>;
+        pulse-per-rev = <2>;
+        schedule-delay = <10000>;
+        gpio = <&gpio TEGRA_GPIO(DD, 0) 0>;
+        status = "okay";
+    };
+
+	pwm-fan {
+		compatible = "pwm-fan";
+		status = "okay";
+		pwms = <&tegra_pwm 3 45334>;
+		shared_data = <&pwm_fan_shared_data>;
+		active_pwm = <0 64 128 191 255 255 255 255 255 255>;
+	};
+
+	thermal-fan-est {
+		name = "thermal-fan-est";
+		compatible = "thermal-fan-est";
+		status = "okay";
+		num_resources = <0>;
+		shared_data = <&thermal_fan_est_shared_data>;
+		trip_length = <10>;
+		active_trip_temps = <0 46000 61000 76000 81000 140000 150000 160000 170000 180000>;
+		active_hysteresis = <0 8000 8000 7000 7000 0 0 0 0 0>;
 	};
 };
 
@@ -134,9 +186,10 @@
 
 		nvidia,audio-routing =
 			"x Headphone Jack", "x HPOL",
-			"x Headphone Jack", "x HPOR";
+			"x Headphone Jack", "x HPOR",
+			"x IN1P",           "x Mic Jack",
+			"x Mic Jack",       "x MICBIAS1";
 			
-		nvidia,xbar = <&tegra_axbar>;
 		mclk-fs = <512>;
 
 		hdr40_snd_link_i2s: i2s_dai_link1: nvidia,dai-link-1 {
