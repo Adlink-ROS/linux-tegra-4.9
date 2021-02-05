@@ -14,12 +14,10 @@
  /**
  *	External SD card
  */ 
-&sdmmc3 {
-	mmc-ocr-mask = <0x0>;
-	cd-inverted;
-	cd-gpios = <&gpio TEGRA_GPIO(Z, 2) 0>;
-	nvidia,cd-wakeup-capable;
-	status = "okay";
+/ {
+	sdhci@700b0400 { /* SDMMC3 for SD card */
+		status = "okay";
+	};
 };
 
 /**
@@ -167,8 +165,13 @@
 	};
 };
 
-
 / {
+	ahub {
+		i2s@702d1300 {
+			status = "okay";
+		};
+	};
+
 	tegra_sound: sound {
 		status = "okay";
 		compatible = "nvidia,tegra-audio-t210ref-mobile-rt565x";
@@ -190,6 +193,7 @@
 			"x IN1P",           "x Mic Jack",
 			"x Mic Jack",       "x MICBIAS1";
 			
+		nvidia,xbar = <&tegra_axbar>;
 		mclk-fs = <512>;
 
 		hdr40_snd_link_i2s: i2s_dai_link1: nvidia,dai-link-1 {
@@ -205,5 +209,18 @@
 			num-channel = <2>;
 			status = "okay";
 		};
+
+		nvidia,dai-link-2 {
+			status = "disabled";
+		};
+
+		nvidia,dai-link-3 {
+			status = "disabled";
+		};
+
+		nvidia,dai-link-4 {
+			status = "disabled";
+		};
+
 	};
 };

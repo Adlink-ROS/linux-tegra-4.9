@@ -52,41 +52,8 @@
 					status = "okay";
 				};
 			};
-
-			override@1 {
-				target = <&tegra_i2s4>;
-				_overlay_ {
-					status = "disabled";
-				};
-			};
-
-			override@2 {
-				target = <&tegra_sound>;
-				_overlay_ {
-					nvidia,dai-link-1 {
-						cpu-dai = <&tegra_i2s1>;
-						cpu-dai-name = "I2S1";
-					};
-				};
-			};
 		};
 
-		fragment@3 {
-			ids = ">=3448-0002-100";
-			override@0 {
-				target = <&sdhci3>;
-				_overlay_ {
-					status = "okay";
-				};
-			};
-
-			override@1 {
-				target = <&sdhci0>;
-				_overlay_ {
-					status = "disabled";
-				};
-			};
-		};
 
 		fragment@4 {
 			ids = "3449-0000-000";
@@ -339,7 +306,7 @@
 			override@3 {
 				target = <&{/leds}>;
 				_overlay_ {
-					status = "okay";
+					status = "disabled";
 				};
 			};
 			/* IMX219 dual sensor module */
@@ -535,7 +502,7 @@
 			override@29 {
 				target = <&{/cam_i2cmux}>;
 				_overlay_ {
-					status = "okay";
+					status = "disabled";
 				};
 			};
 			override@30 {

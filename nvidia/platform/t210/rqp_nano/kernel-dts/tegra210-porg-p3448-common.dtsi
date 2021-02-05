@@ -362,10 +362,6 @@
 				enable-cya;
 			};
 
-			i2s@702d1400 {
-				status = "disabled";
-			};
-
 			dmic@702d4000 {
 				regulator-supplies = "vdd-1v8-dmic";
 				vdd-1v8-dmic-supply = <&max77620_sd3>;
