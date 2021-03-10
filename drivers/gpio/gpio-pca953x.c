@@ -628,13 +628,15 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 			chip->irq_stat[i] &= chip->reg_direction[i];
 		mutex_init(&chip->irq_lock);
 
-		ret = devm_request_threaded_irq(&client->dev,
+		
+			ret = devm_request_threaded_irq(&client->dev,
 					client->irq,
 					   NULL,
 					   pca953x_irq_handler,
-					   IRQF_TRIGGER_LOW | IRQF_ONESHOT |
-						   IRQF_SHARED,
+					   IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_SHARED,
 					   dev_name(&client->dev), chip);
+		
+
 		if (ret) {
 			dev_err(&client->dev, "failed to request irq %d\n",
 				client->irq);
@@ -656,7 +658,6 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
 					     &pca953x_irq_chip,
 					     client->irq, NULL);
 	}
-
 	return 0;
 }
 
@@ -683,6 +684,15 @@ static int device_pca953x_init(struct pca953x_chip *chip, u32 invert)
 	ret = pca953x_read_regs(chip, chip->regs->output, chip->reg_output);
 	if (ret)
 		goto out;
+
+        ret = pca953x_read_regs(chip, chip->regs->output, chip->reg_output);
+        if (ret)
+            goto out;
+        memset(val, 0, NBANK(chip));
+        ret = pca953x_write_regs(chip, PCA953X_DIRECTION, val);
+        if (ret)
+            goto out;
+
 
 	ret = pca953x_read_regs(chip, chip->regs->direction,
 				chip->reg_direction);

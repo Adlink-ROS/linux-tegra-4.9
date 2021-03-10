@@ -1,0 +1,48 @@
+#include "tegra210-porg-p3448-common.dtsi"
+#include "tegra210-rqp-nano-gpio-default.dtsi"
+#include "tegra210-rqp-nano-pinmux.dtsi"
+#include "tegra210-rqp-nano-carrier-board-a2.dtsi"
+
+/ {
+	nvidia,dtsfilename = __FILE__;
+	nvidia,dtbbuildtime = __DATE__, __TIME__;
+	
+	compatible = "nvidia,jetson-nano", "nvidia,tegra210";
+	model = "ADLINK ROScube-Pico Nano Development Kit";
+
+	sdhci@700b0600 { /* SDMMC4 for EMMC */
+		status = "okay";
+	};
+
+	spi@70410000 { /* QSPI */
+		status = "disabled";
+	};
+
+	gpio@6000d000 {
+			/* gpio-name for 40-pin header, gpio-name given as COL(10) x ROW(20) */
+			gpio-line-names = "",   "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "SPI1_MOSI",    "SPI1_MISO",    "SPI1_SCK",     "SPI1_CS0",     "SPI0_MOSI",    "SPI0_MISO",    "SPI0_SCK",     "SPI0_CS0",
+			"SPI0_CS1",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "GPIO13",      "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"UART1_RTS",    "UART1_CTS",    "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "I2S0_FS",    "I2S0_DIN",    "I2S0_DOUT",   "I2S0_SCLK",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "GPIO01",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "GPIO07",   "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "GPIO12",       "",     "",     "",     "",     "",
+			"GPIO11",      "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "GPIO09",     "",     "",     "",
+			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
+			"",     "",     "SPI1_CS1",     "",     "",     "",     "",     "",     "",     "";
+	};
+};
