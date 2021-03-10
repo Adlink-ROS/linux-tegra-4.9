@@ -60,7 +60,10 @@ static int tpm_tis_spi_transfer(struct tpm_tis_data *data, u32 addr, u16 len,
 {
 	struct tpm_tis_spi_phy *phy = to_tpm_tis_spi_phy(data);
 	int ret = 0;
-	int i;
+
+	u8 *ptr;
+
+	//int i;
 	struct spi_message m;
 	struct spi_transfer spi_xfer;
 	u8 transfer_len;
@@ -68,70 +71,37 @@ static int tpm_tis_spi_transfer(struct tpm_tis_data *data, u32 addr, u16 len,
 	spi_bus_lock(phy->spi_device->master);
 
 	while (len) {
-		transfer_len = min_t(u16, len, MAX_SPI_FRAMESIZE);
 
-		phy->iobuf[0] = (in ? 0x80 : 0) | (transfer_len - 1);
-		phy->iobuf[1] = 0xd4;
-		phy->iobuf[2] = addr >> 8;
-		phy->iobuf[3] = addr;
+	
+			transfer_len = min_t(u16, len, MAX_SPI_FRAMESIZE-4);
+			ptr = phy->iobuf;
+			*ptr++ = (in ? 0x80 : 0) | (transfer_len - 1);
+			*ptr++ = 0xd4;
+			*ptr++ = addr >> 8;
+			*ptr++ = addr;
 
-		memset(&spi_xfer, 0, sizeof(spi_xfer));
-		spi_xfer.tx_buf = phy->iobuf;
-		spi_xfer.rx_buf = phy->iobuf;
-		spi_xfer.len = 4;
-		spi_xfer.cs_change = 1;
-
-		spi_message_init(&m);
-		spi_message_add_tail(&spi_xfer, &m);
-		ret = spi_sync_locked(phy->spi_device, &m);
-		if (ret < 0)
-			goto exit;
-
-		if ((phy->iobuf[3] & 0x01) == 0) {
-			// handle SPI wait states
-			phy->iobuf[0] = 0;
-
-			for (i = 0; i < TPM_RETRY; i++) {
-				spi_xfer.len = 1;
-				spi_message_init(&m);
-				spi_message_add_tail(&spi_xfer, &m);
-				ret = spi_sync_locked(phy->spi_device, &m);
-				if (ret < 0)
-					goto exit;
-				if (phy->iobuf[0] & 0x01)
-					break;
+			if (out) {
+				memcpy(ptr, out, transfer_len);
+				out += transfer_len;
 			}
 
-			if (i == TPM_RETRY) {
-				ret = -ETIMEDOUT;
+			memset(&spi_xfer, 0, sizeof(spi_xfer));
+			spi_xfer.tx_buf = phy->iobuf;
+			spi_xfer.rx_buf = phy->iobuf;
+			spi_xfer.len = 4 + transfer_len;
+
+			spi_message_init( &m);
+			spi_message_add_tail(&spi_xfer, &m);
+			ret = spi_sync_locked(phy->spi_device, &m);
+			if ( ret < 0)
 				goto exit;
+
+			if ( in) {
+				memcpy(in, ptr, transfer_len);
+				in += transfer_len;
 			}
-		}
-
-		spi_xfer.cs_change = 0;
-		spi_xfer.len = transfer_len;
-		spi_xfer.delay_usecs = 5;
-
-		if (in) {
-			spi_xfer.tx_buf = NULL;
-		} else if (out) {
-			spi_xfer.rx_buf = NULL;
-			memcpy(phy->iobuf, out, transfer_len);
-			out += transfer_len;
-		}
-
-		spi_message_init(&m);
-		spi_message_add_tail(&spi_xfer, &m);
-		ret = spi_sync_locked(phy->spi_device, &m);
-		if (ret < 0)
-			goto exit;
-
-		if (in) {
-			memcpy(in, phy->iobuf, transfer_len);
-			in += transfer_len;
-		}
-
 		len -= transfer_len;
+		
 	}
 
 exit:

@@ -231,11 +231,9 @@ static void tach_measure_work(struct work_struct *workp)
 	tach = gpio_tachd->tach_dev;
 
 	(void)gpio_tachometer_read_rpm(tach);
-	if (gpio_tachd->rpm == 0)
-		orderly_poweroff(true);
-	else
-		queue_delayed_work(gpio_tachd->tach_workqueue,
-			&gpio_tachd->tach_work, gpio_tachd->schedule_delay);
+
+	queue_delayed_work(gpio_tachd->tach_workqueue,
+		&gpio_tachd->tach_work, gpio_tachd->schedule_delay);
 }
 
 static const struct of_device_id gpio_tachometer_of_match[] = {

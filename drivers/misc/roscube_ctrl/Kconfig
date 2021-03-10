@@ -1,0 +1,10 @@
+#
+# Adlink Misc devices/control driver
+#
+config ADLINK_ROSCUBE_SWITCH_CTRL
+	depends on ARCH_TEGRA_18x_SOC || ARCH_TEGRA_210_SOC || ARCH_TEGRA_19x_SOC
+	default n
+	tristate "ROSCube RS232/RS485 switch"
+	---help---
+	  Enable this to support Adlink ROSCube project for UART RS232/RS485 switch.
+

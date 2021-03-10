@@ -29,7 +29,7 @@ dtbo-$(CONFIG_OF_ALL_DTBS) := $(patsubst $(dtstree)/%.dts,%.dtbo, $(foreach d,$(
 
 always		:= $(dtb-y)
 
-targets += dtbs
+targets += dtbs dtbs_install
 
 DTC_FLAGS := -i $(tegra-dtstree)/soc/tegra/kernel-include
 DTC_FLAGS += -i $(tegra-dtstree)/platform/tegra/common/kernel-dts
@@ -137,3 +137,5 @@ dtbs: $(DTB_OBJS) $(DTBO_OBJS) FORCE
 
 clean-files := dts/*.dtb *.dtb *.dtbo
 clean-dirs := dts/_ddot_
+
+dtbs_install: $(addsuffix _dtbinst_, $(dtb-y))

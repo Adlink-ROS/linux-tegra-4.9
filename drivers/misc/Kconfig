@@ -822,4 +822,5 @@ source "drivers/misc/genwqe/Kconfig"
 source "drivers/misc/echo/Kconfig"
 source "drivers/misc/cxl/Kconfig"
 source "drivers/misc/inter-tegra/Kconfig"
+source "drivers/misc/roscube_ctrl/Kconfig"
 endmenu
