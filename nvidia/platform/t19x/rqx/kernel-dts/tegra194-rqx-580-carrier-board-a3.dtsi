@@ -394,13 +394,11 @@
             default-state = "off";
         };
 
-#if 0  // default NI, LED6 connect to CARRIER_PWR_ON
         gpled6 { 
             label = "LED6"; /* USER_LED6 */
             gpios = <&pca9535_1 7 GPIO_ACTIVE_LOW>;
             default-state = "off";
         };
-#endif        
     };
 
     /* ROSCube-X RS232/485 MUX */
