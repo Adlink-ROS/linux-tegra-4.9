@@ -24,14 +24,10 @@
  *	External Header 
  */
 
-&spi0 {
-	status = "disabled";
-};
-
 /**
   *	MRAA SPI0
   */
-&spi1 {
+&spi0 {
 	status = "okay";
 
 	spi@0 { /* chip select 0 */
@@ -55,6 +51,10 @@
 			nvidia,tx-clk-tap-delay = <0x0>;
 		};
 	};
+};
+
+&spi1 {
+	status = "disabled";
 };
 
 &spi2 {

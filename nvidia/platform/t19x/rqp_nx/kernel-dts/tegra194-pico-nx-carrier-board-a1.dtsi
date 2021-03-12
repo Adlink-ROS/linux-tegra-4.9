@@ -95,7 +95,7 @@
 			default = "quiet";
 			quiet {
 				state_cap = <4>;
-				active_pwm = <0 64 128 191 255 255 255 255 255 255>;
+				active_pwm = <0 77 128 191 255 255 255 255 255 255>;
 			};
 		};
 	};
