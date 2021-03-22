@@ -53,11 +53,8 @@
 	};
 };
 
+// BMI160
 &spi1 {
-	status = "disabled";
-};
-
-&spi2 {
 	status = "okay";
 
 	spi@0 { /* chip select 0 */
@@ -70,6 +67,10 @@
 			nvidia,tx-clk-tap-delay = <0x0>;
 		};
 	};
+};
+
+&spi2 {
+	status = "disabled";
 };
 
 &spi3 {
