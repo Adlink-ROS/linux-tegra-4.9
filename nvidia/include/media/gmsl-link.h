@@ -59,6 +59,7 @@ struct gmsl_link_ctx {
 	__u32 ser_reg;
 	__u32 sdev_reg;
 	__u32 sdev_def;
+	__u32 reg_mux;
 	bool serdev_found;
 	struct gmsl_stream streams[GMSL_DEV_MAX_NUM_DATA_STREAMS];
 	struct device *s_dev;
