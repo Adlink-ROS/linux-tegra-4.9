@@ -89,6 +89,7 @@ struct gmsl_link_ctx {
 	__u32 ser_reg;          /**< Serializer slave address. */
 	__u32 sdev_reg;         /**< Sensor proxy slave address. */
 	__u32 sdev_def;         /**< Sensor default slave address. */
+	__u32 reg_mux;
 	bool serdev_found;      /**< Indicates whether the serializer device for
                              the specified sensor source was found. Set by
                              the serializer driver during setup; used by
