@@ -18,6 +18,10 @@
 	sdhci@700b0400 { /* SDMMC3 for SD card */
 		status = "okay";
 	};
+
+	sdhci@700b0000 { /* Disable SDMMC1 for SD card */
+		status = "disabled";
+	};
 };
 
 /**
