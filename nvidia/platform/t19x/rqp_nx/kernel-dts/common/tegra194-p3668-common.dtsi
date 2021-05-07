@@ -201,6 +201,12 @@
 
 	mttcan@c310000 {
 		status = "okay";
+		pll_source = "pllc";
+		clocks = <&bpmp_clks TEGRA194_CLK_CAN1_CORE>,
+			<&bpmp_clks TEGRA194_CLK_CAN1_HOST>,
+			<&bpmp_clks TEGRA194_CLK_CAN1>,
+			<&bpmp_clks TEGRA194_CLK_PLLC>;
+		clock-names = "can_core", "can_host","can", "pllc";
 	};
 
 	mttcan@c320000 {
@@ -296,20 +302,6 @@
 			gpios = <TEGRA194_AON_GPIO(AA, 5) 0>;
 			label = "pex_refclk_sel_high";
 			status = "disabled";
-		};
-		w-disable1 {
-			gpio-hog;
-			output-high;
-			gpios = <TEGRA194_AON_GPIO(CC, 2) GPIO_ACTIVE_LOW>;
-			label = "w-disable1";
-			status = "okay";
-		};
-		w-disable2 {
-			gpio-hog;
-			output-high;
-			gpios = <TEGRA194_AON_GPIO(CC, 0) GPIO_ACTIVE_LOW>;
-			label = "w-disable2";
-			status = "okay";
 		};
 	};
 
