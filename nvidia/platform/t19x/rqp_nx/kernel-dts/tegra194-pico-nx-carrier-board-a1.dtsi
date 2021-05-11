@@ -366,14 +366,14 @@
 
 		hdr40_snd_link_i2s: nvidia,dai-link-5 {
 			name-prefix = "x";
-			link-name = "rt5640-playback";
+			link-name = "rt565x-playback";
 			cpu-dai = <&tegra_i2s5>;
 			cpu-dai-name = "I2S5";
 			codec-dai = <&rt5640>;
 			codec-dai-name = "rt5640-aif1";
 			format = "i2s";
 			bit-format = "s16_le";
-			srate = <48000>;
+			srate = <44100>;
 			num-channel = <2>;
 			status = "okay";
 		};
