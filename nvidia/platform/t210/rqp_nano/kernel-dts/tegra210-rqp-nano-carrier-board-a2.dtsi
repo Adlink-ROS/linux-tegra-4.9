@@ -186,9 +186,11 @@
 			 <&tegra_car TEGRA210_CLK_PLL_A_OUT0>,
 			 <&tegra_car TEGRA210_CLK_EXTERN1>;
 		clock-names = "pll_a", "pll_a_out0", "extern1";
-
-		assigned-clocks = <&tegra_car TEGRA210_CLK_EXTERN1>;
+		assigned-clocks = <&tegra_car TEGRA210_CLK_EXTERN1>,
+				  <&tegra_car TEGRA210_CLK_PLL_A_OUT0>,
+				  <&tegra_car TEGRA210_CLK_PLL_A>;
 		assigned-clock-parents = <&tegra_car TEGRA210_CLK_PLL_A_OUT0>;
+		assigned-clock-rates = <12288000>, <49152000>, <368640000>;
 
 		nvidia,num-codec-link = <1>;
 
@@ -196,21 +198,22 @@
 			"x Headphone Jack", "x HPOL",
 			"x Headphone Jack", "x HPOR",
 			"x IN1P",           "x Mic Jack",
+			"x IN1N",           "x Mic Jack",
 			"x Mic Jack",       "x MICBIAS1";
 			
 		nvidia,xbar = <&tegra_axbar>;
-		mclk-fs = <512>;
+		mclk-fs = <256>;
 
 		hdr40_snd_link_i2s: i2s_dai_link1: nvidia,dai-link-1 {
 			name-prefix = "x";
-			link-name = "rt5640-playback";
+			link-name = "rt565x-playback";
 			cpu-dai = <&tegra_i2s4>;
 			cpu-dai-name = "I2S4";
 			codec-dai = <&rt5640>;
 			codec-dai-name = "rt5640-aif1";
 			format = "i2s";
 			bit-format = "s16_le";
-			srate = <48000>;
+			srate = <44100>;
 			num-channel = <2>;
 			status = "okay";
 		};
@@ -226,6 +229,5 @@
 		nvidia,dai-link-4 {
 			status = "disabled";
 		};
-
 	};
 };
