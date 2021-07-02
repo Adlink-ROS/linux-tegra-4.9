@@ -119,6 +119,9 @@ um)
 parisc|mips|powerpc)
 	installed_image_path="boot/vmlinux-$version"
 	;;
+aarch64|arm64)
+	installed_image_path="boot/zImage-$version"
+	;;
 *)
 	installed_image_path="boot/vmlinuz-$version"
 esac
@@ -142,12 +145,34 @@ if [ "$ARCH" = "um" ] ; then
 else
 	cp System.map "$tmpdir/boot/System.map-$version"
 	cp $KCONFIG_CONFIG "$tmpdir/boot/config-$version"
+	ln -sf "/boot/System.map-$version" "$tmpdir/boot/System.map"
+	ln -sf "/boot/config-$version" "$tmpdir/boot/config"
 fi
 # Not all arches include the boot path in KBUILD_IMAGE
 if [ -e $KBUILD_IMAGE ]; then
 	cp $KBUILD_IMAGE "$tmpdir/$installed_image_path"
 else
 	cp arch/$ARCH/boot/$KBUILD_IMAGE "$tmpdir/$installed_image_path"
+fi
+
+case $ARCH in
+um)
+	ln -sf "/$installed_image_path" "$tmpdir/usr/bin/linux"
+	;;
+parisc|mips|powerpc)
+	ln -sf "/$installed_image_path" "$tmpdir/boot/vmlinux"
+	;;
+aarch64|arm64)
+	ln -sf "/$installed_image_path" "$tmpdir/boot/zImage"
+	;;
+*)
+	ln -sf "/$installed_image_path" "$tmpdir/boot/vmlinuz"
+	;;
+esac
+
+# If dtbs have been built for this arch, include them in the package
+if [ -d "arch/$ARCH/boot/dts" ]; then
+  find "arch/$ARCH/boot/dts" -iname '*.dtb' -exec sh -c "mkdir -p '$tmpdir/boot'; cp '{}' '$tmpdir/boot/'" \;
 fi
 
 if grep -q "^CONFIG_OF=y" $KCONFIG_CONFIG ; then
@@ -315,7 +340,8 @@ else
 Package: $packagename
 Provides: linux-image, linux-image-2.6, linux-modules-$version
 Suggests: $fwpackagename
-Architecture: any
+Architecture: $ARCH
+Pre-Depends: nvidia-l4t-core (>> 32.4-0), nvidia-l4t-core (<< 32.5-0), apt-utils
 Description: Linux kernel, version $version
  This package contains the Linux kernel, modules and corresponding other
  files, version: $version.
@@ -325,7 +351,7 @@ fi
 
 # Build kernel header package
 (cd $srctree; find . -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$objtree/debian/hdrsrcfiles"
-(cd $srctree; find arch/*/include include scripts -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
+(cd $srctree; find arch/*/include include scripts tools/include -type f -o -type l) >> "$objtree/debian/hdrsrcfiles"
 (cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$objtree/debian/hdrsrcfiles"
 (cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$objtree/debian/hdrsrcfiles"
 if grep -q '^CONFIG_STACK_VALIDATION=y' $KCONFIG_CONFIG ; then
@@ -347,7 +373,8 @@ cat <<EOF >> debian/control
 
 Package: $kernel_headers_packagename
 Provides: linux-headers, linux-headers-2.6
-Architecture: any
+Architecture: $ARCH
+Pre-Depends: nvidia-l4t-core (>> 32.4-0), nvidia-l4t-core (<< 32.5-0)
 Description: Linux kernel headers for $KERNELRELEASE on \${kernel:debarch}
  This package provides kernel header files for $KERNELRELEASE on \${kernel:debarch}
  .
@@ -362,7 +389,8 @@ if [ -e "$tmpdir/lib/firmware" ]; then
 	cat <<EOF >> debian/control
 
 Package: $fwpackagename
-Architecture: all
+Architecture: $ARCH
+Pre-Depends: nvidia-l4t-core (>> 32.4-0), nvidia-l4t-core (<< 32.5-0)
 Description: Linux kernel firmware, version $version
  This package contains firmware from the Linux kernel, version $version.
 EOF
@@ -375,7 +403,8 @@ cat <<EOF >> debian/control
 Package: $libc_headers_packagename
 Section: devel
 Provides: linux-kernel-headers
-Architecture: any
+Architecture: $ARCH
+Pre-Depends: nvidia-l4t-core (>> 32.4-0), nvidia-l4t-core (<< 32.5-0)
 Description: Linux support headers for userspace development
  This package provides userspaces headers from the Linux kernel.  These headers
  are used by the installed headers for GNU glibc and other system libraries.
@@ -405,7 +434,8 @@ if [ -n "$BUILD_DEBUG" ] ; then
 Package: $dbg_packagename
 Section: debug
 Provides: linux-debug, linux-debug-$version
-Architecture: any
+Architecture: $ARCH
+Pre-Depends: nvidia-l4t-core (>> 32.4-0), nvidia-l4t-core (<< 32.5-0)
 Description: Linux kernel debugging symbols for $version
  This package will come in handy if you need to debug the kernel. It provides
  all the necessary debug symbols for the kernel and its modules.
