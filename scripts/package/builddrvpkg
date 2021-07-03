@@ -1,0 +1,144 @@
+#!/bin/sh
+
+#
+# builddrvtar
+#
+# (C) 2021 by Chester Tseng <chester@cwyark.me>
+#
+# This script is used to compile kernel header and supplements to tbz2, which aims to fullfill Nvidia's driver package format.
+#
+
+set -e
+
+#
+# Some variables and settings used throughout the script
+#
+tmpdir="${objtree}/drvpkg-install"
+tarball="${objtree}/linux-${KERNELRELEASE}-${ARCH}.tar"
+compress="bzip2"
+file_ext="tbz2"
+version=$KERNELRELEASE
+kernel_headers_tarball="${tmpdir}/kernel_headers.${file_ext}"
+kernel_headers_dir="${tmpdir}/kernel_headers"
+kernel_supplements_tarball="${tmpdir}/kernel_supplements.${file_ext}"
+kernel_supplements_dir="${tmpdir}/kernel_supplements"
+
+
+#
+# Clean-up and re-create the temporary directory
+#
+rm -rf -- "${tmpdir}"
+
+
+#
+# Try to install supplements
+#
+if grep -q '^CONFIG_MODULES=y' "${objtree}/.config"; then
+	make ARCH="${ARCH}" O="${objtree}" KBUILD_SRC= INSTALL_MOD_PATH="${kernel_supplements_dir}" modules_install
+fi
+
+#
+# Try to install header
+#
+(cd $srctree; find . -path "*/debian/*" -prune -name Makefile\* -o -name Kconfig\* -o -name \*.pl) > "$tmpdir/hdrsrcfiles"
+(cd $srctree; find arch/*/include include scripts tools/include -type f -o -type l) >> "$tmpdir/hdrsrcfiles"
+(cd $srctree; find arch/$SRCARCH -name module.lds -o -name Kbuild.platforms -o -name Platform) >> "$tmpdir/hdrsrcfiles"
+(cd $srctree; find $(find arch/$SRCARCH -name include -o -name scripts -type d) -type f) >> "$tmpdir/hdrsrcfiles"
+if grep -q '^CONFIG_STACK_VALIDATION=y' $KCONFIG_CONFIG ; then
+	(cd $objtree; find tools/objtool -type f -executable) >> "$tmpdir/hdrobjfiles"
+fi
+(cd $objtree; find arch/$SRCARCH/include Module.symvers include scripts -type f) >> "$tmpdir/hdrobjfiles"
+if grep -q '^CONFIG_GCC_PLUGINS=y' $KCONFIG_CONFIG ; then
+	(cd $objtree; find scripts/gcc-plugins -name \*.so -o -name gcc-common.h) >> "$tmpdir/hdrobjfiles"
+fi
+destdir=$kernel_headers_dir
+mkdir -p "$destdir"
+(cd $srctree; tar -c -f - -T -) < "$tmpdir/hdrsrcfiles" | (cd $destdir; tar -xf -)
+(cd $objtree; tar -c -f - -T -) < "$tmpdir/hdrobjfiles" | (cd $destdir; tar -xf -)
+(cd $objtree; cp $KCONFIG_CONFIG $destdir/.config) # copy .config manually to be where it's expected to be
+#ln -sf "/usr/src/linux-headers-$version" "$kernel_supplements_dir/lib/modules/$version/build"
+rm -f "$tmpdir/hdrsrcfiles" "$tmpdir/hdrobjfiles"
+
+#
+# Install basic kernel files
+#
+# cp -v -- "${objtree}/System.map" "${tmpdir}/boot/System.map-${KERNELRELEASE}"
+# cp -v -- "${objtree}/.config" "${tmpdir}/boot/config-${KERNELRELEASE}"
+# cp -v -- "${objtree}/vmlinux" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+
+
+#
+# Install arch-specific kernel image(s)
+#
+# case "${ARCH}" in
+# 	x86|i386|x86_64)
+# 		[ -f "${objtree}/arch/x86/boot/bzImage" ] && cp -v -- "${objtree}/arch/x86/boot/bzImage" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+# 		;;
+# 	alpha)
+# 		[ -f "${objtree}/arch/alpha/boot/vmlinux.gz" ] && cp -v -- "${objtree}/arch/alpha/boot/vmlinux.gz" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+# 		;;
+# 	parisc*)
+# 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		[ -f "${objtree}/lifimage" ] && cp -v -- "${objtree}/lifimage" "${tmpdir}/boot/lifimage-${KERNELRELEASE}"
+# 		;;
+# 	vax)
+# 		[ -f "${objtree}/vmlinux.SYS" ] && cp -v -- "${objtree}/vmlinux.SYS" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.SYS"
+# 		[ -f "${objtree}/vmlinux.dsk" ] && cp -v -- "${objtree}/vmlinux.dsk" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.dsk"
+# 		;;
+# 	mips)
+# 		if [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.bin" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.bin" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.ecoff" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.ecoff" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.srec" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.srec" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/vmlinux.32" ]; then
+# 			cp -v -- "${objtree}/vmlinux.32" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/vmlinux.64" ]; then
+# 			cp -v -- "${objtree}/vmlinux.64" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/arch/mips/boot/vmlinux.bin" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/vmlinux.bin" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/arch/mips/boot/vmlinux.ecoff" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/vmlinux.ecoff" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/arch/mips/boot/vmlinux.srec" ]; then
+# 			cp -v -- "${objtree}/arch/mips/boot/vmlinux.srec" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		elif [ -f "${objtree}/vmlinux" ]; then
+# 			cp -v -- "${objtree}/vmlinux" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
+# 		fi
+# 		;;
+# 	*)
+# 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-kbuild-${KERNELRELEASE}"
+# 		echo "" >&2
+# 		echo '** ** **  WARNING  ** ** **' >&2
+# 		echo "" >&2
+# 		echo "Your architecture did not define any architecture-dependent files" >&2
+# 		echo "to be placed into the tarball. Please add those to ${0} ..." >&2
+# 		echo "" >&2
+# 		sleep 5
+# 		;;
+# esac
+
+
+#
+# Create the kernel_headers tarball
+#
+(
+	opts=
+	if tar --owner=root --group=root --help >/dev/null 2>&1; then
+		opts="--owner=root --group=root"
+	fi
+	tar cf - -C "$kernel_headers_dir" . $opts | ${compress} > "${kernel_headers_tarball}"
+)
+
+#
+# Create the kernel_supplements tarball
+#
+(
+	opts=
+	if tar --owner=root --group=root --help >/dev/null 2>&1; then
+		opts="--owner=root --group=root"
+	fi
+	tar cf - -C "$kernel_supplements_dir" --exclude="lib/firmware/" . $opts | ${compress} > "${kernel_supplements_tarball}"
+)
+
+exit 0

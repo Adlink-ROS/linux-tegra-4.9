@@ -107,6 +107,14 @@ tar%pkg: FORCE
 
 clean-dirs += $(objtree)/tar-install/
 
+# Nvidia's tbz2 targets
+# ---------------------------------------------------------------------------
+drvpkg%pkg: FORCE
+	$(MAKE) KBUILD_SRC=
+	$(CONFIG_SHELL) $(srctree)/scripts/package/builddrvpkg $@
+
+clean-dirs += $(objtree)/tar-install/
+
 
 # perf-pkg - generate a source tarball with perf source
 # ---------------------------------------------------------------------------

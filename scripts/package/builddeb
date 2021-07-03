@@ -120,7 +120,7 @@ parisc|mips|powerpc)
 	installed_image_path="boot/vmlinux-$version"
 	;;
 aarch64|arm64)
-	installed_image_path="boot/zImage-$version"
+	installed_image_path="boot/Image-$version"
 	;;
 *)
 	installed_image_path="boot/vmlinuz-$version"
@@ -163,7 +163,7 @@ parisc|mips|powerpc)
 	ln -sf "/$installed_image_path" "$tmpdir/boot/vmlinux"
 	;;
 aarch64|arm64)
-	ln -sf "/$installed_image_path" "$tmpdir/boot/zImage"
+	ln -sf "/$installed_image_path" "$tmpdir/boot/Image"
 	;;
 *)
 	ln -sf "/$installed_image_path" "$tmpdir/boot/vmlinuz"
